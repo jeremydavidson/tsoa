@@ -25,6 +25,20 @@ const log = async <T>(label: string, fn: () => Promise<T>) => {
   const metadata = await log('Swagger Spec Generation', spec);
 
   await Promise.all([
+    log('Api gateway v2 Route Generation', () =>
+      generateRoutes(
+        {
+          noImplicitAdditionalProperties: 'silently-remove-extras',
+          basePath: '/v1',
+          entryFile: './fixtures/api-gateway-v2/handler.ts',
+          middleware: 'api-gateway-v2',
+          routesDir: './fixtures/api-gateway-v2',
+        },
+        undefined,
+        undefined,
+        metadata,
+      ),
+    ),
     log('Express Route Generation', () =>
       generateRoutes(
         {
