@@ -3,9 +3,15 @@
     "rootDir": ".",
     "baseUrl": ".",
     "module": "commonjs",
-    "target": "ES2019",
-    "lib": ["ES2019"],
-    "typeRoots": ["node_modules/@types", "./typings"],
+    "target": "es6",
+    "lib": [
+      "es2020"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "./typings",
+      "../node_modules/@types"
+    ],
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -15,12 +21,26 @@
     "noImplicitAny": false,
     "skipLibCheck": true,
     "paths": {
-      "@tsoa/cli/*": ["../packages/cli/src/*"],
-      "@tsoa/runtime/*": ["../packages/runtime/src/*"]
+      "@tsoa/cli/*": [
+        "../packages/cli/src/*"
+      ],
+      "@tsoa/runtime/*": [
+        "../packages/runtime/src/*"
+      ]
     }
   },
-  "references": [{ "path": "../packages/runtime" }, { "path": "../packages/cli" }],
-  "exclude": ["esm", "fixtures/**/routes.ts"],
+  "references": [
+    {
+      "path": "../packages/runtime"
+    },
+    {
+      "path": "../packages/cli"
+    }
+  ],
+  "exclude": [
+    "esm",
+    "fixtures/**/routes.ts"
+  ],
   "ts-node": {
     "transpileOnly": true
   }
