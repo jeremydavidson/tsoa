@@ -5,7 +5,7 @@ import { server } from '../fixtures/koa/server';
 import { Gender, GenericModel, GenericRequest, Model, ParameterTestModel, TestClassModel, TestModel, ValidateMapStringToAny, ValidateMapStringToNumber, ValidateModel } from '../fixtures/testModel';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { File } from '@tsoa/runtime';
+import { File } from '@jeremydavidson/tsoa-runtime';
 
 const basePath = '/v1';
 

@@ -1,4 +1,4 @@
-import { Route, Controller, Post, Body } from '@tsoa/runtime';
+import { Route, Controller, Post, Body } from '@jeremydavidson/tsoa-runtime';
 
 @Route('ExampleTest')
 export class InvalidExampleController extends Controller {

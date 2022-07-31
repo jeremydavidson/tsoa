@@ -5,7 +5,7 @@ import { getPropertyValidators } from './../utils/validatorUtils';
 import { GenerateMetadataError } from './exceptions';
 import { getInitializerValue } from './initializer-value';
 import { MetadataGenerator } from './metadataGenerator';
-import { Tsoa, assertNever } from '@tsoa/runtime';
+import { Tsoa, assertNever } from '@jeremydavidson/tsoa-runtime';
 import { getExtensions, getExtensionsFromJSDocComments } from './extension';
 import { safeFromJson } from '../utils/jsonUtils';
 

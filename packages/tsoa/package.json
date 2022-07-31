@@ -25,8 +25,8 @@
   "author": "Luke Autry <lukeautry@gmail.com> (http://www.lukeautry.com)",
   "license": "MIT",
   "dependencies": {
-    "@tsoa/cli": "^3.14.1",
-    "@tsoa/runtime": "^3.13.0"
+    "@jeremydavidson/tsoa-cli": "^3.14.1",
+    "@jeremydavidson/tsoa-runtime": "^3.13.0"
   },
   "devDependencies": {
     "@types/node": "^14.11.1",
