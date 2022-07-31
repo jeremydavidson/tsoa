@@ -1,4 +1,4 @@
-import { APIGatewayProxyEventV2, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import { expect } from 'chai';
 import { TestModel } from '../fixtures/testModel';
 import 'mocha';
@@ -269,7 +269,7 @@ describe('API Gateway V2 Handler', () => {
   });
 });
 
-async function verifyGetRequestV2(event: APIGatewayProxyEventV2, context: Context, verifyResponse: (res: any) => any, expectedStatus = 200) {
+async function verifyGetRequestV2(event: APIGatewayProxyEvent, context: Context, verifyResponse: (res: any) => any, expectedStatus = 200) {
   const res = await handler[event.routeKey](event, context, err => {
     err;
   });

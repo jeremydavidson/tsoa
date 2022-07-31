@@ -4,7 +4,7 @@ import { ExtendedRoutesConfig } from '../cli';
 import { MetadataGenerator } from '../metadataGeneration/metadataGenerator';
 import { Tsoa } from '@jeremydavidson/tsoa-runtime';
 import { RouteGenerator } from '../routeGeneration/routeGenerator';
-import { convertBracesPathParams } from '../utils/pathUtils';
+import { convertBracesPathParams, convertColonPathParams } from '../utils/pathUtils';
 import { fsMkDir } from '../utils/fs';
 
 export const generateRoutes = async (
@@ -31,6 +31,7 @@ export const generateRoutes = async (
       break;
     case 'api-gateway-v2':
       template = path.join(__dirname, '..', 'routeGeneration/templates/api-gateway-v2.hbs');
+      pathTransformer = convertColonPathParams
       break;
     case 'hapi':
       template = path.join(__dirname, '..', 'routeGeneration/templates/hapi.hbs');
