@@ -673,18 +673,18 @@ export class TypeResolver {
   private getRefTypeName(name: string): string {
     return encodeURIComponent(
       name
-        .replace(/<|>/g, '_')
+        .replace(/<|>/g, '')
         .replace(/\s+/g, '')
-        .replace(/,/g, '.')
+        .replace(/,/g, '')
         .replace(/\'([^']*)\'/g, '$1')
         .replace(/\"([^"]*)\"/g, '$1')
-        .replace(/&/g, '-and-')
-        .replace(/\|/g, '-or-')
-        .replace(/\[\]/g, '-Array')
-        .replace(/{|}/g, '_') // SuccessResponse_{indexesCreated-number}_ -> SuccessResponse__indexesCreated-number__
-        .replace(/([a-z]+):([a-z]+)/gi, '$1-$2') // SuccessResponse_indexesCreated:number_ -> SuccessResponse_indexesCreated-number_
-        .replace(/;/g, '--')
-        .replace(/([a-z]+)\[([a-z]+)\]/gi, '$1-at-$2'), // Partial_SerializedDatasourceWithVersion[format]_ -> Partial_SerializedDatasourceWithVersion~format~_,
+        .replace(/&/g, 'And')
+        .replace(/\|/g, 'Or')
+        .replace(/\[\]/g, 'Array')
+        .replace(/{|}/g, '') // SuccessResponse_{indexesCreated-number}_ -> SuccessResponse__indexesCreated-number__
+        .replace(/([a-z]+):([a-z]+)/gi, '$1$2') // SuccessResponse_indexesCreated:number_ -> SuccessResponse_indexesCreated-number_
+        .replace(/;/g, '')
+        .replace(/([a-z]+)\[([a-z]+)\]/gi, '$1At$2'), // Partial_SerializedDatasourceWithVersion[format]_ -> Partial_SerializedDatasourceWithVersion~format~_,
     );
   }
 
