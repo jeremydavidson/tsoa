@@ -21,10 +21,10 @@
     "noImplicitAny": false,
     "skipLibCheck": true,
     "paths": {
-      "@tsoa/cli/*": [
+      "@jeremydavidson/tsoa-cli/*": [
         "../packages/cli/src/*"
       ],
-      "@tsoa/runtime/*": [
+      "@jeremydavidson/tsoa-runtime/*": [
         "../packages/runtime/src/*"
       ]
     }
