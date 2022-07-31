@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute } from '@jeremydavidson/tsoa-runtime';
+import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute } from 'tsoa';
 {{#each controllers}}
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { {{name}} } from '{{modulePath}}';
@@ -12,15 +12,15 @@ const promiseAny = require('promise.any');
 {{/if}}
 {{#if iocModule}}
 import { iocContainer } from '{{iocModule}}';
-import { IocContainer, IocContainerFactory } from '@jeremydavidson/tsoa-runtime';
+import { IocContainer, IocContainerFactory } from 'tsoa';
 {{/if}}
-import { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyStructuredResultV2, Context } from 'aws-lambda';
 {{!--
 TODO: We probably wont support file upload on lambda?
 {{#if useFileUploads}}
 const multer = require('multer');
 const upload = multer();
-{{/if}}
+{{/if}} 
 --}}
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -65,7 +65,7 @@ export function RegisterRoutes() {
         TODO: Currently passing in the callback so we can catch error and return to API gateway, would be better to see if someone has sent in the
         the callback and then decide if we should invoke it or not
      --}}
-        '{{uppercase method}} {{fullPath}}': {{#if ../../iocModule}}async {{/if}}function {{../name}}_{{name}}(event: APIGatewayProxyEventV2, context: Context, callback: any) {
+        '{{uppercase method}} {{fullPath}}': {{#if ../../iocModule}}async {{/if}}function {{../name}}_{{name}}(event: APIGatewayProxyEvent, context: Context, callback: any) {
             const args = {
                 {{#each parameters}}
                     {{@key}}: {{{json this}}},
@@ -100,6 +100,7 @@ export function RegisterRoutes() {
                     is not JSON we do not want to leak application logic
                     :thinking:
                 --}}
+                console.log("Error on promiseHandler: " + err)
                 return returnHandler(400, err, {})
             }
         },
@@ -117,24 +118,39 @@ export function RegisterRoutes() {
     function promiseHandler(controllerObj: any, promise: any, successStatus: any, callback: any) {
         return Promise.resolve(promise)
             .then((data: any) => {
-
+                console.log("promiseHandler data: " + JSON.stringify(data))
                 let statusCode = successStatus;
                 let headers;
+                console.log(`isController(${JSON.stringify(controllerObj)}): ` + isController(controllerObj))
                 if (isController(controllerObj)) {
                     headers = controllerObj.getHeaders();
                     statusCode = controllerObj.getStatus() || statusCode;
                 }
 
                 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-                return returnHandler(statusCode, data, headers)
+                console.log("promiseHandler calling returnHandler: " + (data))
+                if (data != undefined) {
+                    return returnHandler(statusCode, data, headers)
+                }
             })
-            .catch((error: any) => callback(error));
-    }
+            .catch((error) => {
+                console.log("Error inside promiseHandler: " + error + ", json-error: " + JSON.stringify(error))
+                let statusCode = 400;
+                if (error.statusCode) {
+                    statusCode = error.statusCode;
+                }
+                return {
+                    statusCode,
+                    body: JSON.stringify({"error": error})
+                }
+                // callback(error)
+            });
+        }
 
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
     function returnHandler(statusCode?: number, data?: any, headers: any = {}): APIGatewayProxyStructuredResultV2 {
+        console.log("Calling returnHandler: " + statusCode + ", " + JSON.stringify(data))
         const response = {
             headers,
             statusCode: statusCode || 200,
@@ -145,7 +161,7 @@ export function RegisterRoutes() {
 
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-    function getValidatedArgs(args: any, event: APIGatewayProxyEventV2): any[] {
+    function getValidatedArgs(args: any, event: APIGatewayProxyEvent): any[] {
 
         const fieldErrors: FieldErrors  = {};
         const values = Object.keys(args).map((key) => {
@@ -167,6 +183,8 @@ export function RegisterRoutes() {
                     return event.headers && validationService.ValidateParam(args[key], event.headers[name], name, fieldErrors, undefined, {{{json minimalSwaggerConfig}}});
                 case 'body':
                     return parsedBody && validationService.ValidateParam(args[key], parsedBody, name, fieldErrors, undefined, {{{json minimalSwaggerConfig}}});
+                case 'res':
+                    return responder();
                 {{!--
                 TODO: Understand the body prop
                 case 'body-prop':
@@ -191,6 +209,16 @@ export function RegisterRoutes() {
         }
         return values;
     }
+
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+    function responder(): TsoaResponse<HttpStatusCodeLiteral, unknown>  {
+        console.log("In responder")
+        return function(status, data, headers) {
+            console.log("In responder function: " + status + ", " + JSON.stringify(data))
+            returnHandler(status, data, headers);
+        };
+    };
 
     return handlers
 

@@ -1,7 +1,7 @@
 import { Factory } from 'fishery';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 
-export const apiGatewayProxyEventFactory = Factory.define<APIGatewayProxyEventV2>(({}) => ({
+export const apiGatewayProxyEventFactory = Factory.define<APIGatewayProxyEvent>(({}) => ({
   version: '2.0',
   routeKey: 'GET /route/users/{userId}',
   rawPath: '/route/users/1',
