@@ -89,8 +89,8 @@ export function RegisterRoutes() {
                 const controller = new {{../name}}();
             {{/if}}
 
-            const promise = controller.{{name}}.apply(controller, validatedArgs as any);
-            return promiseHandler(controller, promise, {{successStatus}}, callback);
+                const promise = controller.{{name}}.apply(controller, validatedArgs as any);
+                return promiseHandler(controller, promise, {{successStatus}}, callback);
             } catch (err) {
                 {{!--
                     TODO: This callback isn't very smart, err might not be JSON
@@ -100,7 +100,6 @@ export function RegisterRoutes() {
                     is not JSON we do not want to leak application logic
                     :thinking:
                 --}}
-                console.log("Error on promiseHandler: " + err)
                 return returnHandler(400, err, {})
             }
         },
@@ -118,23 +117,25 @@ export function RegisterRoutes() {
     function promiseHandler(controllerObj: any, promise: any, successStatus: any, callback: any) {
         return Promise.resolve(promise)
             .then((data: any) => {
-                console.log("promiseHandler data: " + JSON.stringify(data))
                 let statusCode = successStatus;
                 let headers;
-                console.log(`isController(${JSON.stringify(controllerObj)}): ` + isController(controllerObj))
                 if (isController(controllerObj)) {
                     headers = controllerObj.getHeaders();
                     statusCode = controllerObj.getStatus() || statusCode;
                 }
 
                 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-                console.log("promiseHandler calling returnHandler: " + (data))
                 if (data != undefined) {
-                    return returnHandler(statusCode, data, headers)
+                    // If data comes from a responder, data is already an APIGatewayProxyResult
+                    // otherwise, call returnHandler
+                    if (data.statusCode) {
+                        return data;
+                    } else {
+                        return returnHandler(statusCode, data, headers)
+                    }
                 }
             })
             .catch((error) => {
-                console.log("Error inside promiseHandler: " + error + ", json-error: " + JSON.stringify(error))
                 let statusCode = 400;
                 if (error.statusCode) {
                     statusCode = error.statusCode;
@@ -150,7 +151,6 @@ export function RegisterRoutes() {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
     function returnHandler(statusCode?: number, data?: any, headers: any = {}): APIGatewayProxyStructuredResultV2 {
-        console.log("Calling returnHandler: " + statusCode + ", " + JSON.stringify(data))
         const response = {
             headers,
             statusCode: statusCode || 200,
@@ -213,10 +213,8 @@ export function RegisterRoutes() {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
     function responder(): TsoaResponse<HttpStatusCodeLiteral, unknown>  {
-        console.log("In responder")
         return function(status, data, headers) {
-            console.log("In responder function: " + status + ", " + JSON.stringify(data))
-            returnHandler(status, data, headers);
+            return returnHandler(status, data, headers);
         };
     };
 
