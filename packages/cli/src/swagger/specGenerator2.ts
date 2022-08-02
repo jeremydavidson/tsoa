@@ -179,6 +179,12 @@ export class SpecGenerator2 extends SpecGenerator {
       })
       .map(p => this.buildParameter(p));
 
+    pathMethod["x-amazon-apigateway-integration"] = {
+      "uri": "--generatedFunctionArn--",
+      "httpMethod": "POST",
+      "type": "aws_proxy"
+    }
+    
     const bodyPropParameter = this.buildBodyPropParameter(controllerName, method);
     if (bodyPropParameter) {
       pathMethod.parameters.push(bodyPropParameter);
