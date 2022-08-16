@@ -137,8 +137,9 @@ export function RegisterRoutes() {
             })
             .catch((error) => {
                 let statusCode = 400;
+                // if error already has a statusCode, it is a legit lambda response
                 if (error.statusCode) {
-                    statusCode = error.statusCode;
+                    return error;
                 }
                 return {
                     statusCode,
