@@ -14,7 +14,7 @@ const promiseAny = require('promise.any');
 import { iocContainer } from '{{iocModule}}';
 import { IocContainer, IocContainerFactory } from '@jeremydavidson/tsoa';
 {{/if}}
-import { APIGatewayProxyEvent, APIGatewayProxyStructuredResultV2, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 {{!--
 TODO: We probably wont support file upload on lambda?
 {{#if useFileUploads}}
@@ -79,6 +79,7 @@ export function RegisterRoutes() {
                 validatedArgs = getValidatedArgs(args, event);
 
             {{#if ../../iocModule}}
+                const request = event.requestContext
                 const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
 
                 const controller: any = await container.get<{{../name}}>({{../name}});
@@ -100,6 +101,8 @@ export function RegisterRoutes() {
                     is not JSON we do not want to leak application logic
                     :thinking:
                 --}}
+                console.log("handler error: " + err)
+                console.log("handler json error: " + JSON.stringify(err))
                 return returnHandler(400, err, {})
             }
         },
@@ -136,27 +139,36 @@ export function RegisterRoutes() {
                 }
             })
             .catch((error) => {
+                console.log("promiseHandler error: " + error)
+                console.log("promiseHandler json error: " + JSON.stringify(error))
+
                 let statusCode = 400;
                 // if error already has a statusCode, it is a legit lambda response
                 if (error.statusCode) {
+                    console.log("promiseHandler returning error: " + JSON.stringify(error))
                     return error;
                 }
-                return {
+
+                const errorMessage = error.toString()
+                const returnObject = {
                     statusCode,
-                    body: JSON.stringify({"error": error})
+                    body: JSON.stringify({"error": errorMessage})
                 }
+                console.log("promiseHandler catch returning returnObject: " + JSON.stringify(returnObject))
+                return returnObject
                 // callback(error)
             });
         }
 
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-    function returnHandler(statusCode?: number, data?: any, headers: any = {}): APIGatewayProxyStructuredResultV2 {
+    function returnHandler(statusCode?: number, data?: any, headers: any = {}): APIGatewayProxyResult {
         const response = {
             headers,
             statusCode: statusCode || 200,
             body: JSON.stringify(data)
         }
+        console.log("returnHandler returning response: " + JSON.stringify(response))
         return response;
     }
 
